@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug SentinelPay API",
+      "program": "${workspaceFolder}/src/server.ts",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ts-node",
+      "runtimeArgs": [
+        "--transpile-only",
+        "--project",
+        "${workspaceFolder}/tsconfig.json"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "neverOpen",
+      "console": "integratedTerminal",
+      "outputCapture": "std",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ]
+    }
+  ]
+}
