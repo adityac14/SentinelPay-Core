@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 
 // Import assessment routes - will be under api/assessments
-// import {assessmentRoutes} from './routes/assessment.routes';
+import {assessmentRoutes} from './routes/assessment.routes';
 
 // Create the Express application instance
 // Typed as Application for better TypeScript support
@@ -33,8 +33,7 @@ app.get('/health', (req, res) => {
 // e.g. POST /api/assessments/assess
 //      GET  /api/assessments
 //      GET  /api/assessments/:referenceId
-// Commented out until assessment.routes.ts is fully implemented
-// app.use('/api/assessments', assessmentRoutes);
+app.use('/api/assessments', assessmentRoutes);
 
 // Global 404 handler
 // Catches any request that doesn't match a registered route
