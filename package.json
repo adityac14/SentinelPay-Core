@@ -1,12 +1,21 @@
 {
   "name": "sentinelpay-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "SentinelPay — Payment Risk Assessment API for the Canadian fintech ecosystem",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "fintech",
+    "payments",
+    "risk-assessment",
+    "nodejs",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

@@ -1,9 +1,8 @@
 import { MongoClient, Db } from 'mongodb';
-import dotenv from 'dotenv';
 
-// Load enviornment variables from .env file
-// Must be called before accessing process.env values
-dotenv.config();
+// No dotenv import here — environment variables are loaded
+// once at application startup in server.ts
+// By the time connectDB() is called, process.env is already populated
 
 // Read the MongoDB connection string from environment variables
 // This keeps credentials out of source code

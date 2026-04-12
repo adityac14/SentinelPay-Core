@@ -1,6 +1,5 @@
-// Load enviornment variables first before any other inports
-// This ensures porcess.env values are available throughout the app
-// Must be at he very top before importing modules that use process.env
+// Load environment variables ONCE at application entry point
+// Must be the very first line before any other imports
 import dotenv from 'dotenv';
 dotenv.config()
 
