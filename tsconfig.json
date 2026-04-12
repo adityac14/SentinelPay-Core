@@ -1,20 +1,27 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "commonjs",
+    // Environment settings
     "target": "ES2020",
+    "module": "Node16",
+    "moduleResolution": "node16",
+
+    // Explicitly set rootDir to src/
     "rootDir": "./src",
     "outDir": "./dist",
+
+    // Strict type checking
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    /* Add these for extra professionalism */
+
+    // Additional professional settings
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+
+    // Silence deprecation warnings from third party packages
+    "ignoreDeprecations": "5.0"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", "tests"]
 }
