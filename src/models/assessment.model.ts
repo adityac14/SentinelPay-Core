@@ -1,5 +1,5 @@
 // Import enums from our interface file
-import { RiskLevel, AssessmentStatus } from '../interfaces/payee.interface';
+import { RiskLevel, AssessmentStatus } from '../interfaces/assessment.interface';
 
 import { z } from 'zod';
 
@@ -32,7 +32,7 @@ export const AssessPaymentSchema = z.object({
 
     // Payment amount - must be a positive number
     // Assessed as part of transaction anomaly risk factor
-    payeeAmount: z.number()
+    paymentAmount : z.number()
         .positive('Payment amount must be greater than zero')
         .max(1000000, 'Payment amount exceeds maximum single transaction limit'),
 });
@@ -40,7 +40,7 @@ export const AssessPaymentSchema = z.object({
 // Schema for validating GET /api/assessments/:referenceId
 // referenceId is our human-readable ID e.g. PAY-2024-001
 export const GetAssessmentSchema = z.object({
-    referenceID: z.string()
+    referenceId: z.string()
         .min(1, 'Reference ID is required')
         .regex(/^PAY-\d{4}-\d{3,}$/, 'Invalid reference ID format'),
 })
