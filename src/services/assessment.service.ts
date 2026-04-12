@@ -124,7 +124,7 @@ export class AssessmentService {
     // Retrieves a single assessment by its human readable referenceID
     // Returns null if no matching document found
     // Controller converts null into a 404 HTTP response
-    async getAssessmentByReferenceID(referenceId: string): Promise<IAssessmentResult | null> {
+    async getAssessmentByReferenceId(referenceId: string): Promise<IAssessmentResult | null> {
         const document = await this.repository.getAssessmentByRefereneId(referenceId);
 
         // Return null if no document found - this is a normal expected outcome
