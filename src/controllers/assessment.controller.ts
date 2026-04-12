@@ -92,21 +92,19 @@ export class AssessmentController {
     }
 
     // GET /api/assessments
-    // Retrieves a paginated and optionally filitered list of assessments
-    // Query parameters are pre-validated by validate(GetAssessmentsQuerySchema, 'query') middleware
+    // Retrieves a paginated and optionally filtered list of assessments
     async getAll(req: Request, res: Response): Promise<void> {
         try {
 
-            // req.query is already validated and typed by the middleware
-            // Optional filters: riskLevel, assessmentStatus, limit, skip
-            const query = req.query as GetAssessmentsQuery;
+            // Query params are stored in res.locals.validatedQuery by the middleware
+            // because Express 5 made req.query read-only and we cannot reassign it
+            // Fall back to req.query if res.locals.validatedQuery is not set
+            const query = (res.locals.validatedQuery || req.query) as GetAssessmentsQuery;
 
             // Delegate to service — returns assessments list with pagination metadata
-            // Service runs list and count queries concurrently for performance
             const result = await service.getAssessments(query);
 
             // Return 200 OK with the assessment list and pagination metadata
-            // Caller can use total, limit, and skip to calculate total pages
             res.status(200).json({
                 status: 'success',
                 data: result.assessments,
@@ -114,11 +112,7 @@ export class AssessmentController {
                     total: result.total,
                     limit: result.limit,
                     skip: result.skip,
-                    // Calculate total pages so caller knows how many pages exist
-                    // Math.ceil ensures we round up — 11 results at limit 10 = 2 pages
                     totalPages: Math.ceil(result.total / result.limit),
-                    // Calculate current page number from skip and limit
-                    // e.g. skip 20 with limit 10 = page 3
                     currentPage: Math.floor(result.skip / result.limit) + 1,
                 },
             });

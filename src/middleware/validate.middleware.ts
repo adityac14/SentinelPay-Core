@@ -18,60 +18,68 @@ type ValidateSource = 'body' | 'params' | 'query';
 // router.get('/:referenceId', validate(GetAssessmentSchema, 'params'), controller.getOne)
 // router.get('/', validate(GetAssessmentsQuerySchema, 'query'), controller.getAll)
 export const validate = (
-    // z.ZodType is the correct Zod v4 type for accepting any Zod schema
-    // z.ZodTypeAny and ZodSchema are both deprecated aliases for z.ZodType
-    schema: z.ZodType,
-    source: ValidateSource = 'body'
+  // z.ZodType is the correct Zod v4 replacement for deprecated ZodSchema/ZodTypeAny
+  schema: z.ZodType,
+  source: ValidateSource = 'body'
 ) => {
-    // Returns the actual Express midleware function
-    // Express calls this with req, res, next for every matching request
-    return (req: Request, res: Response, next: NextFunction): void => {
-        try {
-            // Extract the data to validate from the corrrect part of the request
-            // req.body - parsed JSON body from POST/PUT requests
-            // req.params - dynamic URL segments Ex: :referenceId
-            // req.query - query string parameters ex: ? limit=10
-            const dataToValidate = req[source];
+  // Return the actual Express middleware function
+  // Express calls this with req, res, next for every matching request
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
 
-            // safeParse validates without throwing - returns success or error object
-            // We use safeParse instead of parse so we can handle errors gracefully
-            // rather than letting Zod throw an uncaught exception
-            const result = schema.safeParse(dataToValidate);
+      // Extract the data to validate from the correct part of the request
+      // req.body   — parsed JSON body from POST/PUT requests
+      // req.params — dynamic URL segments Ex: :referenceId
+      // req.query  — query string parameters Ex: ?limit=10
+      const dataToValidate = req[source];
 
-            if (!result.success) {
-                // Validation failed - extract and format the error messages
-                // result.error is a ZodError containing an array of issues
-                const errors = formatZodErrors(result.error);
+      // safeParse validates without throwing — returns success or error object
+      // We use safeParse instead of parse so we handle errors gracefully
+      // rather than letting Zod throw an uncaught exception
+      const result = schema.safeParse(dataToValidate);
 
-                // Return 400 Bad Request with structured error response
-                // 400 means the client sent invalid data - their problem to fix
-                res.status(400).json({
-                    status: 'error',
-                    message: 'Validation failed',
-                    errors,
-                });
+      if (!result.success) {
+        // Validation failed — extract and format the error messages
+        // result.error is a ZodError containing an array of issues
+        const errors = formatZodErrors(result.error);
 
-                // Return early - do not call next()
-                // This stops the request from reaching the controller
-                return;
-            }
+        // Return 400 Bad Request with structured error response
+        // 400 means the client sent invalid data — their problem to fix
+        res.status(400).json({
+          status: 'error',
+          message: 'Validation failed',
+          errors,
+        });
 
-            // Validation passed - attach the validated and typed data back to the request object so the controller receives clean data
-            req[source] = result.data
+        // Return early — do not call next()
+        // This stops the request from reaching the controller
+        return;
+      }
 
-            // Call next to pass control to the next middleware or controller
-            next();
+      // Validation passed — attach validated data back to the request
+      // Express 5 made req.query read-only so we cannot reassign it directly
+      // Instead we store validated data on res.locals which is designed
+      // for passing data between middleware and route handlers
+      // body and params are still writable so we handle them directly
+      if (source === 'query') {
+        // res.locals is a plain object Express provides for middleware
+        // to pass data to downstream handlers — always writable
+        res.locals.validatedQuery = result.data;
+      } else {
+        // body and params are writable in Express 5 — assign directly
+        req[source] = result.data;
+      }
 
-        }
-        catch (error) {
-            // Catch any unexpected errors during validation
-            // PAsses to Express global error handler
-            next(error)
+      // Call next() to pass control to the next middleware or controller
+      next();
 
-        }
+    } catch (error) {
+      // Catch any unexpected errors during validation
+      // Passes to Express global error handler
+      next(error);
     }
-
-}
+  };
+};
 
 // Formats a ZodError into a clean array of field/message pairs
 // Makes it easy for API callers to identify exactly which fields failed
@@ -81,15 +89,17 @@ export const validate = (
 //   { field: 'accountNumber', message: 'Account number must be at least 7 digits' },
 //   { field: 'bankCode', message: 'Bank code must be exactly 3 characters' }
 // ]
-const formatZodErrors = (error: ZodError) => {
-    return error.issues.map(issue => ({
-        // issue.path is an array of keys showing where the error occurred
-        // e.g. ['accountNumber'] or ['address', 'postCode'] for nested objects
-        // join('.') converts it to dot notation e.g. 'address.postCode'
-        // If path is empty the error is at root level — we show 'root'
-        field: issue.path.length > 0 ? issue.path.join('.') : 'root',
-        // issue.message is the human readable validation error message
-        // defined in our Zod schema
-        message: issue.message,
-    }));
+const formatZodErrors = (
+  error: ZodError
+): { field: string; message: string }[] => {
+  return error.issues.map(issue => ({
+
+    // issue.path is an array of keys showing where the error occurred
+    // join('.') converts it to dot notation e.g. 'address.postCode'
+    // If path is empty the error is at root level — we show 'root'
+    field: issue.path.length > 0 ? issue.path.join('.') : 'root',
+
+    // issue.message is the human readable validation error message
+    message: issue.message,
+  }));
 };
