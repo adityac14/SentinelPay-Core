@@ -38,12 +38,16 @@ export const AssessPaymentSchema = z.object({
 });
 
 // Schema for validating GET /api/assessments/:referenceId
-// referenceId is our human-readable ID e.g. PAY-2024-001
+// Must match the updated PAY-YYYYMMDD-HHMMSS-XXXX format
+// Ex: PAY-20260412-001558-4821
 export const GetAssessmentSchema = z.object({
-    referenceId: z.string()
-        .min(1, 'Reference ID is required')
-        .regex(/^PAY-\d{4}-\d{3,}$/, 'Invalid reference ID format'),
-})
+  referenceId: z.string()
+    .min(1, 'Reference ID is required')
+    .regex(
+      /^PAY-\d{8}-\d{6}-\d{4}$/,
+      'Invalid reference ID format — expected PAY-YYYYMMDD-HHMMSS-XXXX'
+    ),
+});
 
 // Schema for validating query parameters on GET /api/assessments
 // Supports filtering by risk level, status, and pagination
