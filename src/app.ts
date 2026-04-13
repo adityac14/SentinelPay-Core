@@ -1,4 +1,6 @@
 import express, { Application } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 // Import assessment routes - will be under api/assessments
 import {assessmentRoutes} from './routes/assessment.routes';
@@ -14,6 +16,10 @@ app.use(express.json());
 // Middleware: parse URL encoded form data
 // extended: false uses the built-in querying library
 app.use(express.urlencoded({ extended: false }));
+
+// Swagger UI — interactive API documentation
+// Available at /api-docs in both local and production environments
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check endpoint
 // Used to verify the server is running and responsive
