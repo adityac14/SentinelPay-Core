@@ -8,7 +8,7 @@ A payment risk assessment REST API built for the Canadian fintech ecosystem. Sen
 |---|---|
 | **Base URL** | `https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net` |
 | **Health Check** | `https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net/health` |
-| **Assess Endpoint** | `POST .../api/assessments/assess` |
+| **API Docs** | `https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net/api-docs` |
 
 ---
 
@@ -98,7 +98,7 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=tru
 DB_NAME=sentinelpay
 ```
 
-> **Note for Azure deployment:** Ensure your MongoDB Atlas Network Access allows Azure outbound IP addresses or set `0.0.0.0/0` to allow all IPs. Also set `NODE_OPTIONS=--openssl-legacy-provider` in Azure App Service environment variables to resolve TLS compatibility between Node.js 22 and MongoDB Atlas.
+> **Note for Azure deployment:** Add your Azure App Service outbound IP addresses to MongoDB Atlas Network Access under **Security → Network Access**. Your outbound IPs are listed in the Azure Portal under **Networking → Outbound addresses**.
 
 > **Note for Windows 11 local development:** Use the standard MongoDB connection string (not SRV format) to bypass a Windows DNS resolver issue with SRV records.
 
@@ -125,140 +125,13 @@ With the server running in one terminal, open a second terminal and run:
 
 ## API Reference
 
-### Base URL
+Full interactive API documentation is available via Swagger UI:
+
 ```
-https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net
-```
-
----
-
-### GET /health
-
-Verifies the server is running and responsive.
-
-**Response:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-04-12T00:15:58.696Z",
-  "service": "SentinelPay API",
-  "version": "1.0.0"
-}
+https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net/api-docs
 ```
 
----
-
-### POST /api/assessments/assess
-
-Submits a payment for risk assessment. Returns a full risk breakdown with score, level, and recommendation.
-
-**Request Body:**
-```json
-{
-  "accountNumber": "1234567",
-  "payeeName": "John Smith",
-  "bankCode": "004",
-  "paymentAmount": 500
-}
-```
-
-**Response — 201 Created:**
-```json
-{
-  "status": "success",
-  "message": "Payment assessment completed",
-  "data": {
-    "referenceId": "PAY-20260412-001558-4821",
-    "accountNumber": "1234567",
-    "payeeName": "John Smith",
-    "paymentAmount": 500,
-    "overallRiskScore": 9,
-    "riskLevel": "Low",
-    "assessmentStatus": "Cleared",
-    "riskFactors": [
-      {
-        "factor": "Bank Code Validity",
-        "score": 0,
-        "weight": 0.2,
-        "description": "Bank code 004 is a recognized Canadian financial institution"
-      }
-    ],
-    "recommendation": "Risk score 9/100 — payment cleared. No significant risk factors detected. Safe to proceed.",
-    "createdAt": "2026-04-12T00:15:58.696Z"
-  }
-}
-```
-
-**Response — 400 Validation Error:**
-```json
-{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "field": "accountNumber",
-      "message": "Account number must be at least 7 digits"
-    }
-  ]
-}
-```
-
----
-
-### GET /api/assessments/:referenceId
-
-Retrieves a single assessment by its reference ID.
-
-**Response — 200 OK:**
-```json
-{
-  "status": "success",
-  "data": {
-    "referenceId": "PAY-20260412-001558-4821",
-    "overallRiskScore": 9,
-    "riskLevel": "Low",
-    "assessmentStatus": "Cleared"
-  }
-}
-```
-
-**Response — 404 Not Found:**
-```json
-{
-  "status": "error",
-  "message": "Assessment with reference ID PAY-20260412-001558-4821 not found"
-}
-```
-
----
-
-### GET /api/assessments
-
-Retrieves a paginated and optionally filtered list of assessments.
-
-**Query Parameters (all optional):**
-
-| Parameter | Description | Example |
-|---|---|---|
-| riskLevel | Filter by risk level | Low, Medium, High, Critical |
-| assessmentStatus | Filter by status | Cleared, Flagged, Blocked |
-| limit | Records per page | 10 |
-| skip | Records to skip | 0 |
-
-**Response — 200 OK:**
-```json
-{
-  "status": "success",
-  "data": [...],
-  "pagination": {
-    "total": 42,
-    "limit": 10,
-    "skip": 0,
-    "totalPages": 5,
-    "currentPage": 1
-  }
-}
-```
+The docs page lets you explore all endpoints, view request and response schemas, and test the API live directly in the browser.
 
 ---
 
