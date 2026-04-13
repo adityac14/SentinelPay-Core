@@ -2,7 +2,13 @@
 
 A payment risk assessment REST API built for the Canadian fintech ecosystem. SentinelPay evaluates incoming payment requests against a multi-factor risk scoring engine and returns a detailed risk assessment — helping financial institutions detect and prevent fraudulent transactions before they are processed. Inspired by Symcor's Payee Verify product and Canada's push toward Real-Time Rail (RTR) and open banking in 2026.
 
-> Built with Node.js, TypeScript, Express, MongoDB Atlas, and Zod.
+**Deployed on Microsoft Azure App Service — Canada Central**
+
+| | |
+|---|---|
+| **Base URL** | `https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net` |
+| **Health Check** | `https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net/health` |
+| **Assess Endpoint** | `POST .../api/assessments/assess` |
 
 ---
 
@@ -28,14 +34,16 @@ SentinelPay evaluates every payment against 5 weighted risk factors and returns 
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js |
-| Language | TypeScript |
-| Framework | Express v5 |
-| Database | MongoDB Atlas (Azure-hosted) |
-| Validation | Zod v4 |
-| Dev tools | ts-node-dev, Git |
+| | Technology | Version |
+|---|---|---|
+| **Runtime** | Node.js | v22 LTS |
+| **Language** | TypeScript | v6 |
+| **Framework** | Express | v5 |
+| **Database** | MongoDB Atlas | v6 (Azure-hosted) |
+| **Validation** | Zod | v4 |
+| **Cloud** | Microsoft Azure App Service | Canada Central |
+| **CI/CD** | GitHub Actions | — |
+| **Dev tools** | ts-node-dev, Git | — |
 
 ---
 
@@ -86,11 +94,13 @@ Create a `.env` file in the project root:
 
 ```
 PORT=3000
-MONGODB_URI=mongodb://username:password@host1:27017,host2:27017,host3:27017/?ssl=true&replicaSet=atlas-xxx&authSource=admin&appName=SentinelPay-Core
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority&appName=SentinelPay-Core
 DB_NAME=sentinelpay
 ```
 
-> Note: Use the standard connection string from MongoDB Atlas (not the SRV format) if you are on Windows 11.
+> **Note for Azure deployment:** Ensure your MongoDB Atlas Network Access allows Azure outbound IP addresses or set `0.0.0.0/0` to allow all IPs. Also set `NODE_OPTIONS=--openssl-legacy-provider` in Azure App Service environment variables to resolve TLS compatibility between Node.js 22 and MongoDB Atlas.
+
+> **Note for Windows 11 local development:** Use the standard MongoDB connection string (not SRV format) to bypass a Windows DNS resolver issue with SRV records.
 
 ### Running the Server
 
@@ -117,7 +127,7 @@ With the server running in one terminal, open a second terminal and run:
 
 ### Base URL
 ```
-http://localhost:3000
+https://sentinelpay-core-api-b4b0fzdvgwdnhtgc.canadacentral-01.azurewebsites.net
 ```
 
 ---
