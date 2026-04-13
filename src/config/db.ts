@@ -3,10 +3,6 @@ import { MongoClient, Db } from 'mongodb';
 const uri = process.env.MONGODB_URI || '';
 const dbName = process.env.DB_NAME || 'sentinelpay';
 
-console.log('DB_NAME:', dbName);
-console.log('MONGODB_URI defined:', uri ? 'YES' : 'NO — check Azure environment variables');
-console.log('MONGODB_URI prefix:', uri.substring(0, 20));
-
 // Add TLS options to fix SSL handshake issues on Azure Linux with Node.js 22
 // tlsAllowInvalidCertificates and tlsAllowInvalidHostnames help bypass
 // TLS version negotiation issues between MongoDB driver v7 and Node.js v22
