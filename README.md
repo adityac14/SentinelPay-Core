@@ -150,4 +150,3 @@ The docs page lets you explore all endpoints, view request and response schemas,
 
 **Aditya Chattopadhyay**
 - LinkedIn: [linkedin.com/in/aditya-chattopadhyay](https://www.linkedin.com/in/aditya-chattopadhyay/)
-- GitHub: [github.com/adityac14](https://github.com/adityac14)
